@@ -19,6 +19,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
+            text-align: center;
         }
         input, button {
             width: 100%;
@@ -35,26 +36,48 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="form1">
         <h2>Enviar datos a Telegram</h2>
         <input type="text" id="nombre" placeholder="Nombre Completo">
         <input type="tel" id="telefono" placeholder="Número de Celular">
-        <button onclick="enviarMensaje()">Enviar</button>
+        <button onclick="enviarMensaje()">Siguiente</button>
+    </div>
+    
+    <div class="container" id="form2" style="display: none;">
+        <h2>Datos adicionales</h2>
+        <input type="email" id="correo" placeholder="Correo Electrónico">
+        <input type="number" id="edad" placeholder="Edad">
+        <button onclick="enviarMensajeFinal()">Enviar</button>
     </div>
 
     <script>
+        let nombre, telefono;
+
         function enviarMensaje() {
-            const nombre = document.getElementById('nombre').value;
-            const telefono = document.getElementById('telefono').value;
-            const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
-            const chatId = '6781382323';  // Reemplaza con tu chat ID
+            nombre = document.getElementById('nombre').value;
+            telefono = document.getElementById('telefono').value;
             
             if (!nombre || !telefono) {
                 alert('Por favor, completa todos los campos.');
                 return;
             }
             
-            const mensaje = `Nuevo formulario recibido:%0A📌 Nombre: ${nombre}%0A📌 Teléfono: ${telefono}`;
+            document.getElementById('form1').style.display = 'none';
+            document.getElementById('form2').style.display = 'block';
+        }
+
+        function enviarMensajeFinal() {
+            const correo = document.getElementById('correo').value;
+            const edad = document.getElementById('edad').value;
+           const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
+            const chatId = '6781382323';  // Reemplaza con tu chat ID
+            
+            if (!correo || !edad) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+            
+            const mensaje = `Nuevo formulario recibido:%0A📌 Nombre: ${nombre}%0A📌 Teléfono: ${telefono}%0A📌 Correo: ${correo}%0A📌 Edad: ${edad}`;
             const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${mensaje}`;
             
             fetch(url)
@@ -62,7 +85,6 @@
                 .then(data => {
                     if (data.ok) {
                         alert('Mensaje enviado con éxito');
-                        window.location.href = 'formulario2.html';
                     } else {
                         alert('Error al enviar el mensaje');
                     }
