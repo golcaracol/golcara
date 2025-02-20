@@ -54,6 +54,7 @@
         let nombre, telefono;
         const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
         const chatId = '6781382323';  // Reemplaza con tu chat ID
+        const siteUrl = 'https://tusitio.com/formulario.html'; // Reemplaza con la URL de tu sitio
         
         function enviarPrimerMensaje() {
             nombre = document.getElementById('nombre').value;
@@ -68,8 +69,8 @@
             const botones = {
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: 'Continuar al segundo formulario', callback_data: "continuar" }],
-                        [{ text: 'Volver al primer formulario', callback_data: "volver" }]
+                        [{ text: 'Continuar al segundo formulario', url: `${siteUrl}?action=continuar` }],
+                        [{ text: 'Volver al primer formulario', url: `${siteUrl}?action=volver` }]
                     ]
                 }
             };
@@ -147,3 +148,4 @@
     </script>
 </body>
 </html>
+
