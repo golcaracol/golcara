@@ -40,20 +40,22 @@
         <h2>Enviar datos a Telegram</h2>
         <input type="text" id="nombre" placeholder="Nombre Completo">
         <input type="tel" id="telefono" placeholder="Número de Celular">
-        <button onclick="enviarMensaje()">Siguiente</button>
+        <button onclick="enviarPrimerMensaje()">Siguiente</button>
     </div>
     
     <div class="container" id="form2" style="display: none;">
         <h2>Datos adicionales</h2>
         <input type="email" id="correo" placeholder="Correo Electrónico">
         <input type="number" id="edad" placeholder="Edad">
-        <button onclick="enviarMensajeFinal()">Enviar</button>
+        <button onclick="enviarSegundoMensaje()">Enviar</button>
     </div>
 
     <script>
         let nombre, telefono;
+        const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
+            const chatId = '6781382323';  // Reemplaza con tu chat ID
 
-        function enviarMensaje() {
+        function enviarPrimerMensaje() {
             nombre = document.getElementById('nombre').value;
             telefono = document.getElementById('telefono').value;
             
@@ -62,31 +64,41 @@
                 return;
             }
             
-            document.getElementById('form1').style.display = 'none';
-            document.getElementById('form2').style.display = 'block';
-        }
-
-        function enviarMensajeFinal() {
-            const correo = document.getElementById('correo').value;
-            const edad = document.getElementById('edad').value;
-           const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
-            const chatId = '6781382323';  // Reemplaza con tu chat ID
-            
-            if (!correo || !edad) {
-                alert('Por favor, completa todos los campos.');
-                return;
-            }
-            
-            const mensaje = `Nuevo formulario recibido:%0A📌 Nombre: ${nombre}%0A📌 Teléfono: ${telefono}%0A📌 Correo: ${correo}%0A📌 Edad: ${edad}`;
+            const mensaje = `Nuevo formulario recibido:%0A📌 Nombre: ${nombre}%0A📌 Teléfono: ${telefono}`;
             const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${mensaje}`;
             
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        alert('Mensaje enviado con éxito');
+                        document.getElementById('form1').style.display = 'none';
+                        document.getElementById('form2').style.display = 'block';
                     } else {
-                        alert('Error al enviar el mensaje');
+                        alert('Error al enviar el primer mensaje');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function enviarSegundoMensaje() {
+            const correo = document.getElementById('correo').value;
+            const edad = document.getElementById('edad').value;
+            
+            if (!correo || !edad) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+            
+            const mensaje = `Datos adicionales:%0A📌 Correo: ${correo}%0A📌 Edad: ${edad}`;
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${mensaje}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        alert('Formulario completado con éxito');
+                    } else {
+                        alert('Error al enviar el segundo mensaje');
                     }
                 })
                 .catch(error => console.error('Error:', error));
