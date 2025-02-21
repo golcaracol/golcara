@@ -43,7 +43,7 @@
             font-weight: bold;
         }
 
-        input, button {
+        input, select, button {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -224,10 +224,10 @@
             </div>
         </div>
 
-        <!-- Lista de usuarios -->
+        <!-- Lista de préstamos -->
         <div class="section user-list">
-            <h3>Usuarios Registrados</h3>
-            <ul id="userList"></ul>
+            <h3>Préstamos Registrados</h3>
+            <ul id="loanList"></ul>
         </div>
     </div>
 
@@ -295,12 +295,37 @@
                 amount,
                 interestRate,
                 term,
-                monthlyPayment: (amount * (interestRate / 100 / 12)) / (1 - Math.pow(1 + (interestRate / 100 / 12), -term))
+                monthlyPayment: (amount * (interestRate / 100 / 12)) / (1 - Math.pow(1 + (interestRate / 100 / 12), -term)),
+                paymentDate: calculatePaymentDate(term),
             };
 
             loans.push(loan);
 
+            // Mostrar préstamos registrados
+            displayLoans();
+
             alert('Préstamo registrado con éxito');
+        }
+
+        // Mostrar los préstamos registrados
+        function displayLoans() {
+            const loanList = document.getElementById('loanList');
+            loanList.innerHTML = '';
+
+            loans.forEach(loan => {
+                const li = document.createElement('li');
+                const user = users.find(u => u.email === loan.userEmail);
+                const paymentDate = new Date(loan.paymentDate);
+                li.textContent = `${user.name} - Monto: $${loan.amount} - Cuota mensual: $${loan.monthlyPayment.toFixed(2)} - Fecha de pago: ${paymentDate.toLocaleDateString()}`;
+                loanList.appendChild(li);
+            });
+        }
+
+        // Calcular la fecha de pago del préstamo
+        function calculatePaymentDate(months) {
+            const currentDate = new Date();
+            currentDate.setMonth(currentDate.getMonth() + months);
+            return currentDate;
         }
 
         // Calcular cuota mensual
