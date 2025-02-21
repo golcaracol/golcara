@@ -23,14 +23,16 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
             margin-top: 20px;
+            overflow-x: auto;
         }
 
         h1 {
             text-align: center;
             color: #333;
             font-size: 2rem;
+            margin-bottom: 20px;
         }
 
         .form-group {
@@ -63,31 +65,27 @@
             background-color: #45a049;
         }
 
-        .result {
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
-            background-color: #f0f0f0;
-            padding: 15px;
-            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .result p {
-            margin: 0;
-            font-size: 18px;
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
 
-        .section {
-            margin-top: 30px;
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
         }
 
-        .user-list {
-            margin-top: 20px;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        .user-list h3 {
-            text-align: center;
+        tr:hover {
+            background-color: #f1f1f1;
         }
 
         footer {
@@ -192,13 +190,34 @@
             <button onclick="registerPayment()">Registrar Pago</button>
         </div>
 
-        <!-- Lista de clientes y pagos -->
-        <div class="section user-list">
+        <!-- Tabla de clientes registrados -->
+        <div class="section">
             <h3>Clientes Registrados</h3>
-            <ul id="clientList"></ul>
+            <table id="clientTable">
+                <thead>
+                    <tr>
+                        <th>Nombre del Cliente</th>
+                        <th>Monto del Préstamo</th>
+                        <th>Saldo Restante</th>
+                    </tr>
+                </thead>
+                <tbody id="clientList"></tbody>
+            </table>
+        </div>
 
+        <!-- Tabla de pagos realizados -->
+        <div class="section">
             <h3>Pagos Realizados</h3>
-            <ul id="paymentList"></ul>
+            <table id="paymentTable">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Monto Pagado</th>
+                        <th>Fecha de Pago</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentList"></tbody>
+            </table>
         </div>
     </div>
 
@@ -285,9 +304,13 @@
             clientList.innerHTML = '';
 
             clients.forEach(client => {
-                const li = document.createElement('li');
-                li.textContent = `${client.name} - Monto del préstamo: $${client.amount} - Saldo restante: $${client.remainingAmount.toFixed(2)}`;
-                clientList.appendChild(li);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${client.name}</td>
+                    <td>$${client.amount}</td>
+                    <td>$${client.remainingAmount.toFixed(2)}</td>
+                `;
+                clientList.appendChild(tr);
             });
         }
 
@@ -297,9 +320,13 @@
             paymentList.innerHTML = '';
 
             payments.forEach(payment => {
-                const li = document.createElement('li');
-                li.textContent = `${payment.clientName} - Monto pagado: $${payment.paymentAmount} - Fecha de pago: ${payment.paymentDate}`;
-                paymentList.appendChild(li);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${payment.clientName}</td>
+                    <td>$${payment.paymentAmount}</td>
+                    <td>${payment.paymentDate}</td>
+                `;
+                paymentList.appendChild(tr);
             });
         }
 
