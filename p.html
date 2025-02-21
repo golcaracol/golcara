@@ -208,8 +208,16 @@
     </footer>
 
     <script>
-        let clients = [];
-        let payments = [];
+        // Recuperar los datos de localStorage
+        let clients = JSON.parse(localStorage.getItem('clients')) || [];
+        let payments = JSON.parse(localStorage.getItem('payments')) || [];
+
+        // Cargar los datos al iniciar la página
+        document.addEventListener("DOMContentLoaded", function () {
+            displayClients();
+            displayPayments();
+            loadClientSelect();
+        });
 
         // Registrar un nuevo cliente
         function registerClient() {
@@ -224,12 +232,11 @@
             const client = { name, amount, remainingAmount: amount };
             clients.push(client);
 
+            // Guardar los datos en localStorage
+            localStorage.setItem('clients', JSON.stringify(clients));
+
             // Agregar cliente a la lista de selección de pagos
-            const select = document.getElementById('paymentClient');
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
+            loadClientSelect();
 
             // Mostrar clientes registrados
             displayClients();
@@ -261,6 +268,10 @@
 
                 payments.push(payment);
 
+                // Guardar los datos en localStorage
+                localStorage.setItem('clients', JSON.stringify(clients));
+                localStorage.setItem('payments', JSON.stringify(payments));
+
                 // Mostrar pagos registrados
                 displayPayments();
 
@@ -289,6 +300,19 @@
                 const li = document.createElement('li');
                 li.textContent = `${payment.clientName} - Monto pagado: $${payment.paymentAmount} - Fecha de pago: ${payment.paymentDate}`;
                 paymentList.appendChild(li);
+            });
+        }
+
+        // Cargar los clientes en el select para registrar pagos
+        function loadClientSelect() {
+            const select = document.getElementById('paymentClient');
+            select.innerHTML = '<option value="">Selecciona un cliente</option>';
+
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.name;
+                option.textContent = client.name;
+                select.appendChild(option);
             });
         }
     </script>
