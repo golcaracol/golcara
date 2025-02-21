@@ -199,6 +199,7 @@
                         <th>Nombre del Cliente</th>
                         <th>Monto del Préstamo</th>
                         <th>Saldo Restante</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="clientList"></tbody>
@@ -303,12 +304,13 @@
             const clientList = document.getElementById('clientList');
             clientList.innerHTML = '';
 
-            clients.forEach(client => {
+            clients.forEach((client, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${client.name}</td>
                     <td>$${client.amount}</td>
                     <td>$${client.remainingAmount.toFixed(2)}</td>
+                    <td><button onclick="deleteClient(${index})">Eliminar</button></td>
                 `;
                 clientList.appendChild(tr);
             });
@@ -341,6 +343,23 @@
                 option.textContent = client.name;
                 select.appendChild(option);
             });
+        }
+
+        // Eliminar un cliente
+        function deleteClient(index) {
+            const confirmDelete = confirm('¿Estás seguro de que quieres eliminar este cliente?');
+            if (confirmDelete) {
+                // Eliminar el cliente de la lista
+                clients.splice(index, 1);
+
+                // Guardar los datos actualizados en localStorage
+                localStorage.setItem('clients', JSON.stringify(clients));
+
+                // Mostrar la lista actualizada de clientes
+                displayClients();
+
+                alert('Cliente eliminado con éxito');
+            }
         }
     </script>
 
