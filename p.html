@@ -153,81 +153,52 @@
     </header>
 
     <div class="container">
-        <!-- Registro de usuario -->
+        <!-- Registro de cliente -->
         <div class="section">
-            <h2>Registrar Usuario</h2>
+            <h2>Registrar Cliente</h2>
             <div class="form-group">
-                <label for="userName">Nombre del Usuario</label>
-                <input type="text" id="userName" placeholder="Nombre completo">
-            </div>
-
-            <div class="form-group">
-                <label for="userEmail">Correo Electrónico</label>
-                <input type="email" id="userEmail" placeholder="Correo electrónico">
-            </div>
-
-            <button onclick="registerUser()">Registrar Usuario</button>
-        </div>
-
-        <!-- Registro de préstamo -->
-        <div class="section">
-            <h2>Registrar Préstamo</h2>
-            <div class="form-group">
-                <label for="loanUser">Seleccionar Usuario</label>
-                <select id="loanUser">
-                    <option value="">Selecciona un usuario</option>
-                </select>
+                <label for="clientName">Nombre del Cliente</label>
+                <input type="text" id="clientName" placeholder="Nombre completo">
             </div>
 
             <div class="form-group">
                 <label for="loanAmount">Monto del Préstamo</label>
-                <input type="number" id="loanAmount" placeholder="Monto en $">
+                <input type="number" id="loanAmount" placeholder="Monto del préstamo en $">
             </div>
 
-            <div class="form-group">
-                <label for="interestRate">Tasa de Interés (%)</label>
-                <input type="number" id="interestRate" placeholder="Tasa de interés anual">
-            </div>
-
-            <div class="form-group">
-                <label for="loanTerm">Plazo del Préstamo (meses)</label>
-                <input type="number" id="loanTerm" placeholder="Plazo en meses">
-            </div>
-
-            <button onclick="registerLoan()">Registrar Préstamo</button>
+            <button onclick="registerClient()">Registrar Cliente</button>
         </div>
 
-        <!-- Cálculo de Cuotas -->
+        <!-- Registro de pago -->
         <div class="section">
-            <h2>Calcular Cuota Mensual</h2>
+            <h2>Registrar Pago de Cuota</h2>
             <div class="form-group">
-                <label for="calcLoanAmount">Monto del Préstamo</label>
-                <input type="number" id="calcLoanAmount" placeholder="Monto en $">
-            </div>
-
-            <div class="form-group">
-                <label for="calcInterestRate">Tasa de Interés (%)</label>
-                <input type="number" id="calcInterestRate" placeholder="Tasa de interés anual">
+                <label for="paymentClient">Seleccionar Cliente</label>
+                <select id="paymentClient">
+                    <option value="">Selecciona un cliente</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label for="calcLoanTerm">Plazo del Préstamo (meses)</label>
-                <input type="number" id="calcLoanTerm" placeholder="Plazo en meses">
+                <label for="paymentAmount">Monto de la Cuota Pagada</label>
+                <input type="number" id="paymentAmount" placeholder="Monto de la cuota pagada en $">
             </div>
 
-            <button onclick="calculateLoan()">Calcular Cuota Mensual</button>
-
-            <!-- Resultados -->
-            <div class="result" id="calcResult" style="display:none;">
-                <p><strong>Cuota Mensual: </strong><span id="calcMonthlyPayment"></span></p>
-                <p><strong>Total a Pagar: </strong><span id="calcTotalPayment"></span></p>
+            <div class="form-group">
+                <label for="paymentDate">Fecha de Pago</label>
+                <input type="date" id="paymentDate">
             </div>
+
+            <button onclick="registerPayment()">Registrar Pago</button>
         </div>
 
-        <!-- Lista de préstamos -->
+        <!-- Lista de clientes y pagos -->
         <div class="section user-list">
-            <h3>Préstamos Registrados</h3>
-            <ul id="loanList"></ul>
+            <h3>Clientes Registrados</h3>
+            <ul id="clientList"></ul>
+
+            <h3>Pagos Realizados</h3>
+            <ul id="paymentList"></ul>
         </div>
     </div>
 
@@ -237,115 +208,88 @@
     </footer>
 
     <script>
-        let users = [];
-        let loans = [];
+        let clients = [];
+        let payments = [];
 
-        // Registrar un nuevo usuario
-        function registerUser() {
-            const name = document.getElementById('userName').value;
-            const email = document.getElementById('userEmail').value;
+        // Registrar un nuevo cliente
+        function registerClient() {
+            const name = document.getElementById('clientName').value;
+            const amount = parseFloat(document.getElementById('loanAmount').value);
 
-            if (!name || !email) {
-                alert('Por favor, ingresa un nombre y correo válidos.');
+            if (!name || isNaN(amount) || amount <= 0) {
+                alert('Por favor, ingresa un nombre válido y un monto del préstamo.');
                 return;
             }
 
-            const user = { name, email };
-            users.push(user);
+            const client = { name, amount, remainingAmount: amount };
+            clients.push(client);
 
-            // Agregar usuario a la lista de selección de préstamos
-            const select = document.getElementById('loanUser');
+            // Agregar cliente a la lista de selección de pagos
+            const select = document.getElementById('paymentClient');
             const option = document.createElement('option');
-            option.value = email;
+            option.value = name;
             option.textContent = name;
             select.appendChild(option);
 
-            // Mostrar usuarios registrados
-            displayUsers();
+            // Mostrar clientes registrados
+            displayClients();
 
-            alert('Usuario registrado con éxito');
+            alert('Cliente registrado con éxito');
         }
 
-        // Mostrar los usuarios registrados
-        function displayUsers() {
-            const userList = document.getElementById('userList');
-            userList.innerHTML = '';
+        // Registrar el pago de la cuota
+        function registerPayment() {
+            const clientName = document.getElementById('paymentClient').value;
+            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+            const paymentDate = document.getElementById('paymentDate').value;
 
-            users.forEach(user => {
-                const li = document.createElement('li');
-                li.textContent = `${user.name} - ${user.email}`;
-                userList.appendChild(li);
-            });
-        }
-
-        // Registrar préstamo para un usuario
-        function registerLoan() {
-            const userEmail = document.getElementById('loanUser').value;
-            const amount = parseFloat(document.getElementById('loanAmount').value);
-            const interestRate = parseFloat(document.getElementById('interestRate').value);
-            const term = parseInt(document.getElementById('loanTerm').value);
-
-            if (!userEmail || isNaN(amount) || isNaN(interestRate) || isNaN(term)) {
-                alert('Por favor, completa todos los campos.');
+            if (!clientName || isNaN(paymentAmount) || paymentAmount <= 0 || !paymentDate) {
+                alert('Por favor, completa todos los campos correctamente.');
                 return;
             }
 
-            const loan = {
-                userEmail,
-                amount,
-                interestRate,
-                term,
-                monthlyPayment: (amount * (interestRate / 100 / 12)) / (1 - Math.pow(1 + (interestRate / 100 / 12), -term)),
-                paymentDate: calculatePaymentDate(term),
-            };
+            const client = clients.find(c => c.name === clientName);
 
-            loans.push(loan);
+            if (client) {
+                client.remainingAmount -= paymentAmount;
 
-            // Mostrar préstamos registrados
-            displayLoans();
+                const payment = {
+                    clientName,
+                    paymentAmount,
+                    paymentDate,
+                };
 
-            alert('Préstamo registrado con éxito');
+                payments.push(payment);
+
+                // Mostrar pagos registrados
+                displayPayments();
+
+                alert('Pago registrado con éxito');
+            }
         }
 
-        // Mostrar los préstamos registrados
-        function displayLoans() {
-            const loanList = document.getElementById('loanList');
-            loanList.innerHTML = '';
+        // Mostrar los clientes registrados
+        function displayClients() {
+            const clientList = document.getElementById('clientList');
+            clientList.innerHTML = '';
 
-            loans.forEach(loan => {
+            clients.forEach(client => {
                 const li = document.createElement('li');
-                const user = users.find(u => u.email === loan.userEmail);
-                const paymentDate = new Date(loan.paymentDate);
-                li.textContent = `${user.name} - Monto: $${loan.amount} - Cuota mensual: $${loan.monthlyPayment.toFixed(2)} - Fecha de pago: ${paymentDate.toLocaleDateString()}`;
-                loanList.appendChild(li);
+                li.textContent = `${client.name} - Monto del préstamo: $${client.amount} - Saldo restante: $${client.remainingAmount.toFixed(2)}`;
+                clientList.appendChild(li);
             });
         }
 
-        // Calcular la fecha de pago del préstamo
-        function calculatePaymentDate(months) {
-            const currentDate = new Date();
-            currentDate.setMonth(currentDate.getMonth() + months);
-            return currentDate;
-        }
+        // Mostrar los pagos realizados
+        function displayPayments() {
+            const paymentList = document.getElementById('paymentList');
+            paymentList.innerHTML = '';
 
-        // Calcular cuota mensual
-        function calculateLoan() {
-            const amount = parseFloat(document.getElementById('calcLoanAmount').value);
-            const interestRate = parseFloat(document.getElementById('calcInterestRate').value) / 100 / 12;
-            const months = parseInt(document.getElementById('calcLoanTerm').value);
-
-            if (isNaN(amount) || isNaN(interestRate) || isNaN(months) || amount <= 0 || interestRate <= 0 || months <= 0) {
-                alert('Por favor, ingresa valores válidos.');
-                return;
-            }
-
-            // Cálculo de la cuota mensual
-            const monthlyPayment = (amount * interestRate) / (1 - Math.pow(1 + interestRate, -months));
-            const totalPayment = monthlyPayment * months;
-
-            document.getElementById('calcMonthlyPayment').innerText = `$${monthlyPayment.toFixed(2)}`;
-            document.getElementById('calcTotalPayment').innerText = `$${totalPayment.toFixed(2)}`;
-            document.getElementById('calcResult').style.display = 'block';
+            payments.forEach(payment => {
+                const li = document.createElement('li');
+                li.textContent = `${payment.clientName} - Monto pagado: $${payment.paymentAmount} - Fecha de pago: ${payment.paymentDate}`;
+                paymentList.appendChild(li);
+            });
         }
     </script>
 
